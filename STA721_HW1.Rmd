@@ -1,0 +1,39 @@
+---
+title: "STA721 HW1"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## 3(e)  
+Use R to find $Q$ and $U$ for the matrix in Example 1.0.2 in Christensen using the QR and SVD methods respectively. Does $Q$ equal $U$? See help pages via help(qr) and help(svd) for function documentation.  
+**Solution**:  
+```{r}
+#input data
+X<-matrix(c(1,1,1,1,1,1,1,1,1,0,0,0,0,0,0,1,0,0,0,0,0,0,1,1),nrow = 6,byrow = FALSE)
+```  
+We compute $Q$ and $U$ for $X$ using the QR and SVD methods respectively. $Q$ and $U$ are shown below
+```{r}
+Q<-qr.Q(qr(X))
+U<-svd(X)$u
+Q
+U
+```  
+We see that $Q\neq U$.  
+## 3(d)  
+**Solution**:  
+The numerial solutions for projection matrix using SVD is 
+```{r}
+U%*%t(U)
+Q%*%t(Q)
+M<-matrix(c(1/3,1/3,1/3,0,0,0,1/3,1/3,1/3,0,0,0,1/3,1/3,1/3,0,0,0,0,0,0,1,0,0,0,0,0,0,1/2,1/2,0,0,0,0,1/2,1/2),nrow=6)
+X%*%ginv(t(X)%*%X)%*%t(X)-M
+```  
+##4(c)
+```{r}
+V<-matrix(c(2,0,1,0,3,2,1,2,4),nrow=3)
+L<-t(chol(V))
+
+```
