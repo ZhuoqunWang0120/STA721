@@ -1,0 +1,85 @@
+
+
+\documentclass{article}
+\usepackage{url,hyperref}
+\usepackage{graphicx}
+\usepackage{amsmath,amssymb,array,comment,eucal}
+
+
+
+\begin{document}
+%\SweaveOpts{concordance=TRUE}
+\title{STA721 HW1}
+\author{Zhuoqun Wang}
+\date{\today}
+\maketitle
+
+\section*{3(e) Answer}
+<<>>=
+#input data
+X<-matrix(c(1,1,1,1,1,1,1,1,1,0,0,0,0,0,0,1,0,0,0,0,0,0,1,1),
+          nrow = 6,byrow = FALSE)
+Q<-qr.Q(qr(X))[,1:3]
+U<-svd(X)$u[,1:3]
+round(Q,7)
+round(U,7)
+  @  
+We see that $Q\neq U$. 
+
+\section*{3(f) Answer}
+Calculate the projection matrix use $U$ and $Q$ respectively:
+<<>>=
+P_svd<-U[,1:3]%*%t(U[,1:3])
+P_qr<-Q[,1:3]%*%t(Q[,1:3])
+M<-matrix(c(1/3,1/3,1/3,0,0,0,1/3,1/3,1/3,0,0,0,
+            1/3,1/3,1/3,0,0,0,0,0,0,1,0,0,0,0,0,
+            0,1/2,1/2,0,0,0,0,1/2,1/2),nrow=6)
+round(P_svd,7)
+round(P_qr,7)
+M
+  @  
+The projection matrix obtained from SVD and QR decomposition are the same as $M$ in 1.5.8.  
+\section*{4(c) Answer}  
+The Cholesky decomposition of $Y$ is calculated as follows:
+<<>>=
+V<-matrix(c(2,0,1,0,3,2,1,2,4),nrow=3)
+L<-t(chol(V))
+L
+ @
+ \section*{4(d) and 4(e) Answer}  
+Generate 5000 samples of $Y$:
+<<>>=
+set.seed(123)
+Z<-matrix(rnorm(3*5000),nrow=3)
+mu<-c(5,6,7)
+Y<-apply(Z, 2, function(x){L%*%x+mu})
+ @
+In 1.5.2(a), we have $Y_1 \sim N(5,2)$.
+Create a histogram for the marginal distribution of $Y_1$ and overlay the actual density $N(5,2)$:
+<<>>=
+hist(Y[1,],freq = FALSE,breaks = 50,
+     main = "Histogram for Y_1",xlab = "Y_1")
+p<-dnorm(seq(0,10,length.out = 1000),mean = 5,sd = sqrt(2))
+lines(seq(0,10,length.out = 1000),p,col='red')
+  @  
+The histogram of $Y_1$ looks like $N(5,2)$ distribution.  
+\section*{4(f) Answer}
+We calculate the sample mean, variance and covariance of $Z$:
+<<>>=
+A<-matrix(c(2,1,1,1,0,1),nrow=2)
+b<-matrix(c(-15,-18),ncol=1)
+Z_new<-apply(Y, 2, function(x){A%*%x+b})
+Z_mean<-apply(Z_new,1,function(x){mean(x)})
+Z_variance<-apply(Z_new,1,function(x){var(x)})
+Z_covariance<-mean((Z_new[1,]-Z_mean[1])*(Z_new[2,]-Z_mean[2]))
+Z_mean
+Z_variance
+Z_covariance
+  @  
+In 1.5.8, we have $Z\sim N(\mu_Z,\Sigma_Z)$, where $\mu_Z=(1,0)^T$,
+\begin{equation}
+\Sigma_Z = 
+\begin{pmatrix} 11 & 11\\ 11 & 15 \end{pmatrix}.
+\end{equation}
+Hence the estimates obtained with simulation are consistent with the results in 1.5.8.
+\end{document}
